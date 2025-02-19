@@ -1,0 +1,49 @@
+name: Botpress CI/CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Azure Container Registry
+        uses: azure/docker-login@v1
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker image
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # Build with both latest and commit SHA tags
+          docker build . \
+            -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:${IMAGE_TAG} \
+            -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:latest
+
+          # Push both tags
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:${IMAGE_TAG}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:latest
+
+        # - name: 'Deploy to Azure Container Instances'
+        #   uses: 'azure/aci-deploy@v1'
+        #   with:
+        #     resource-group: ${{ secrets.RESOURCE_GROUP }}
+        #     dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+        #     image: ${{ secrets.REGISTRY_LOGIN_SERVER }}/sampleapp:${{ github.sha }}
+        #     registry-login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+        #     registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        #     registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        #     name: aci-sampleapp
+        #     location: 'west us'
