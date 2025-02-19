@@ -3,20 +3,25 @@ name: Botpress CI/CD
 on: 
   push:
     branches:
-      - main
+      - master
 
 jobs:
     build-and-deploy:
         runs-on: ubuntu-latest
+        defaults:
+          run: 
+            shell: bash
         steps:
         # checkout the repo
         - name: 'Checkout GitHub Action'
           uses: actions/checkout@main
 
-        - name: 'Login via Azure CLI'
-          uses: azure/login@v1
-          with:
-            creds: ${{ secrets.AZURE_CREDENTIALS }}
+        # - name: 'Login to Azure'
+        #   uses: azure/docker-login@v1
+        #   with:
+        #     login-server: ${{ secrets.AZURE_LOGIN_SERVER }}
+        #     username: ${{ secrets.AZURE_USERNAME }}
+        #     password: ${{ secrets.AZURE_PASSWORD }}
 
         - name: 'Build and push image'
           uses: azure/docker-login@v1
