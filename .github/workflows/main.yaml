@@ -8,9 +8,8 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
+    # if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only run if tests passed
+
 
     steps:
       - name: Checkout repository
@@ -24,17 +23,9 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Build and push Docker image
-        env:
-          IMAGE_TAG: ${{ github.sha }}
         run: |
-          # Build with both latest and commit SHA tags
-          docker build . \
-            -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:${IMAGE_TAG} \
-            -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:latest
-
-          # Push both tags
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:${IMAGE_TAG}
-          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:latest
+          docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:${{ github.sha }}
+          docker push ${{ secrets.REGISTRY_LOGIN_SERVER }}/botpress:${{ github.sha }}
 
         # - name: 'Deploy to Azure Container Instances'
         #   uses: 'azure/aci-deploy@v1'
