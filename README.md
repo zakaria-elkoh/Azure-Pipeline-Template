@@ -62,5 +62,3 @@ For more information about how the dual-license works and why it works that way,
 
 ![](https://api.segment.io/v1/pixel/page?data=eyJ3cml0ZUtleSI6InczR0xQaGFwY1RqTjdZVnJZQVFYU05Wam9yVUFNOXBmIiwidXNlcklkIjoiYW5vbnltb3VzIn0=)
 
-
-<!-- okay let us gooo!! -->
