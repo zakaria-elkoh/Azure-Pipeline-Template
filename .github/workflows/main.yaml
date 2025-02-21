@@ -3,7 +3,7 @@ name: Botpress CI/CD
 on:
   push:
     branches:
-      - master
+      - develop
 
 jobs:
   build-push-and-deploy:
